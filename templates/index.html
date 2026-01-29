@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HC-LEP // Enterprise Sensing Platform</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-base: #0a0a0c;
+            --bg-surface: #141417;
+            --bg-deep: #000000;
+            --bg-card: rgba(28, 28, 30, 0.82);
+            --border-muted: rgba(255, 255, 255, 0.08);
+            --accent-primary: #3b82f6;
+            --accent-secondary: #8b5cf6;
+            --accent-glow: rgba(59, 130, 246, 0.35);
+            --text-heading: #ffffff;
+            --text-body: #a1a1aa;
+            --text-muted: #71717a;
+            --danger: #ef4444;
+            --success: #10b981;
+            --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            --grid-color: rgba(255, 255, 255, 0.06);
+        }
+
+        body.light-theme {
+            --bg-base: #f0f4f8;
+            --bg-surface: rgba(255, 255, 255, 0.9);
+            --bg-deep: #e2e8f0;
+            --bg-card: rgba(255, 255, 255, 0.7);
+            --border-muted: rgba(59, 130, 246, 0.15);
+            --text-heading: #1e293b;
+            --text-body: #475569;
+            --text-muted: #64748b;
+            --accent-glow: rgba(59, 130, 246, 0.2);
+            --card-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
+            --grid-color: rgba(59, 130, 246, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-body);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(var(--accent-primary) 1.5px, transparent 1.5px);
+            background-size: 32px 32px;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        body.light-theme::after {
+            opacity: 1;
+            background: radial-gradient(circle at 5% 5%, rgba(59, 130, 246, 0.1) 0%, transparent 35%),
+                radial-gradient(circle at 95% 95%, rgba(139, 92, 246, 0.1) 0%, transparent 35%),
+                radial-gradient(circle at 80% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 30%),
+                radial-gradient(circle at 20% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
+        }
+
+        /* HEADER */
+        header {
+            height: 80px;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-muted);
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 10px;
+            position: relative;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .brand-icon::after {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 2.5px solid var(--bg-surface);
+            border-radius: 4px;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .brand-text h1 {
+            color: var(--text-heading);
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            line-height: 0.9;
+        }
+
+        .brand-text span {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            letter-spacing: 0.25em;
+            margin-top: 6px;
+            opacity: 0.9;
+            display: block;
+        }
+
+        /* PIPELINE VISUALIZER */
+        .pipeline-container {
+            background: var(--bg-deep);
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-muted);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-surface) 100%);
+        }
+
+        .pipeline-bg-flow {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.03);
+            z-index: 1;
+        }
+
+        .pipeline-particle {
+            position: absolute;
+            top: 50%;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+            z-index: 2;
+            opacity: 0;
+            filter: blur(1px);
+        }
+
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            position: relative;
+            z-index: 3;
+            width: 120px;
+            transition: 0.3s;
+        }
+
+        .step-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-muted);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-muted);
+            opacity: 0.8;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .light-theme .step-icon {
+            opacity: 1;
+            color: var(--text-body);
+        }
+
+        .step-active .step-icon {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent-primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .step-label {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .step-active .step-label {
+            color: #fff;
+        }
+
+        @keyframes pulse-dot {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        @keyframes data-flow-anim {
+            0% {
+                left: 5%;
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 1;
+            }
+
+            85% {
+                opacity: 1;
+            }
+
+            100% {
+                left: 90%;
+                opacity: 0;
+            }
+        }
+
+        .anim-flow {
+            animation: data-flow-anim 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        /* DATA PACKET */
+        .data-packet {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--accent-primary), 0 0 30px var(--accent-primary);
+            z-index: 10;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .step-active .step-icon {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-primary);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.4);
+            transform: translateY(-4px) scale(1.1);
+        }
+
+        .step-active .step-label {
+            color: var(--text-heading);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* MAIN CONTENT */
+        main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 340px 1fr 340px;
+            gap: 24px;
+            padding: 24px;
+        }
+
+        .panel-col {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-muted);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .light-theme .card {
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .card-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* LIVE DECRYPTION DISPLAY */
+        .decrypt-viz {
+            background: var(--bg-deep);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-muted);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .decrypt-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hex-data {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--danger);
+            word-break: break-all;
+            opacity: 0.8;
+            transition: 0.3s;
+        }
+
+        .plain-data {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            color: var(--success);
+            font-weight: 500;
+            border-top: 1px dashed var(--border-muted);
+            padding-top: 10px;
+        }
+
+        .decrypt-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+            transform: translateX(-100%);
+            pointer-events: none;
+        }
+
+        .anim-slide {
+            animation: slide 1.5s infinite;
+        }
+
+        @keyframes slide {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* RADAR VIEW */
+        .radar-viewport {
+            flex: 1;
+            background: var(--bg-deep);
+            border: 1px solid var(--border-muted);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #radarCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* EXPLANATION TOOLTIP */
+        .info-badge {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid var(--text-muted);
+            color: var(--text-muted);
+            font-size: 9px;
+            text-align: center;
+            line-height: 12px;
+            cursor: help;
+            margin-left: 5px;
+        }
+
+        /* CHART */
+        .chart-box {
+            height: 140px;
+            margin-top: auto;
+        }
+
+        /* BUTTONS */
+        .btn {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-muted);
+            color: var(--text-body);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-surface);
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        .btn-outline.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        /* TOOLBOX */
+        .toolbox-toggle {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 48px;
+            height: 48px;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 12px var(--accent-glow);
+            transition: 0.3s;
+        }
+
+        .toolbox-toggle:hover {
+            transform: rotate(45deg) scale(1.1);
+        }
+
+        .toolbox {
+            position: fixed;
+            bottom: 84px;
+            left: 24px;
+            width: 280px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-muted);
+            border-radius: 16px;
+            padding: 20px;
+            z-index: 999;
+            box-shadow: var(--card-shadow);
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+        }
+
+        .toolbox.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .setting-row {
+            margin-bottom: 20px;
+        }
+
+        .setting-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-heading);
+            margin-bottom: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: var(--border-muted);
+            border-radius: 2px;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .live-val-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin-top: 4px;
+            color: var(--accent-primary);
+            border: 1px solid var(--border-muted);
+            min-height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .light-theme .live-val-pill {
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* GALLERY MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .gallery-container {
+            background: var(--bg-surface);
+            width: 100%;
+            max-width: 1100px;
+            height: 80vh;
+            border-radius: 24px;
+            border: 1px solid var(--border-muted);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .gallery-sidebar {
+            width: 300px;
+            border-right: 1px solid var(--border-muted);
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery-title {
+            padding: 24px;
+            font-size: 14px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-bottom: 1px solid var(--border-muted);
+        }
+
+        .gallery-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        .gallery-item {
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .gallery-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .gallery-item.active {
+            background: var(--accent-primary);
+            color: #fff;
+        }
+
+        .gallery-main {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-deep);
+            position: relative;
+        }
+
+        #gallery-img-view {
+            max-width: 100%;
+            max-height: 70%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .gallery-info {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .gallery-info h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .gallery-info p {
+            font-size: 13px;
+            color: var(--text-body);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            transition: 0.3s;
+        }
+
+        .close-modal:hover {
+            background: var(--danger);
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon"></div>
+            <div class="brand-text">
+                <h1>HC-LEP // PRIVACY ENGINE</h1>
+                <span>ENTERPRISE SENSING PLATFORM</span>
+            </div>
+        </div>
+        <div style="display: flex; gap: 24px; align-items: center;">
+            <div id="status-chip"
+                style="display: flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.08); padding: 5px 14px; border-radius: 100px; border: 1px solid rgba(16, 185, 129, 0.2);">
+                <div
+                    style="width: 6px; height: 6px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success);">
+                </div>
+                <span style="font-size: 10px; font-weight: 800; color: var(--success); letter-spacing: 0.05em;">LINK
+                    ACTIVE</span>
+            </div>
+            <div style="font-family: 'JetBrains Mono'; font-size: 14px; font-weight: 500; color: var(--text-heading); opacity: 0.8;"
+                id="sys-clock">00:00:00</div>
+        </div>
+    </header>
+
+    <!-- TACTICAL PROCESS TRACK -->
+    <div class="pipeline-container">
+        <div class="pipeline-bg-flow"></div>
+        <div id="flow-particle" class="pipeline-particle"></div>
+        <div id="data-packet" class="data-packet"></div>
+
+        <div class="pipeline-step step-active" id="step-sense">
+            <div class="step-icon">📡</div>
+            <div class="step-label">1. Sensing</div>
+            <div id="pill-sense" class="live-val-pill">READY</div>
+        </div>
+
+        <div class="pipeline-step" id="step-encrypt">
+            <div class="step-icon">🔐</div>
+            <div class="step-label">2. Encrypt</div>
+            <div id="pill-encrypt" class="live-val-pill">---</div>
+        </div>
+
+        <div class="pipeline-step" id="step-transmit">
+            <div class="step-icon">☁️</div>
+            <div class="step-label">3. AWS Cloud</div>
+            <div id="pill-transmit" class="live-val-pill">STANDBY</div>
+        </div>
+
+        <div class="pipeline-step" id="step-decrypt">
+            <div class="step-icon">🔓</div>
+            <div class="step-label">4. Decrypt</div>
+            <div id="pill-decrypt" class="live-val-pill">---</div>
+        </div>
+
+        <div class="pipeline-step" id="step-plot">
+            <div class="step-icon">🎯</div>
+            <div class="step-label">5. Visualize</div>
+            <div id="pill-plot" class="live-val-pill">...</div>
+        </div>
+    </div>
+
+    <!-- TOOLBOX -->
+    <div class="toolbox-toggle" onclick="document.querySelector('.toolbox').classList.toggle('active')">⚙️</div>
+    <div class="toolbox">
+        <div class="setting-row">
+            <label class="setting-label">Interface Concept</label>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn btn-outline" id="theme-tactical" onclick="setTheme('dark')"
+                    style="flex: 1; font-size: 9px;">TACTICAL</button>
+                <button class="btn btn-outline" id="theme-studio" onclick="setTheme('light')"
+                    style="flex: 1; font-size: 9px;">STUDIO</button>
+            </div>
+        </div>
+        <div class="setting-row">
+            <label class="setting-label">Data Sync Frequency (<span id="freq-val">200</span>ms)</label>
+            <input type="range" min="100" max="2000" value="200" step="100" id="freq-slider"
+                oninput="updateFreq(this.value)">
+        </div>
+        <div class="setting-row">
+            <label class="setting-label">Resources</label>
+            <button class="btn btn-outline"
+                style="width: 100%; border-color: var(--accent-secondary); color: var(--accent-secondary);"
+                onclick="toggleGallery(true)">
+                📂 OPEN RESOURCE GALLERY
+            </button>
+        </div>
+        <button class="btn"
+            style="width: 100%; background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));"
+            onclick="location.reload()">EMERGENCY DATA RESET</button>
+    </div>
+
+    <!-- GALLERY MODAL -->
+    <div id="gallery-modal" class="modal-overlay">
+        <div class="gallery-container">
+            <div class="gallery-sidebar">
+                <div class="gallery-title">Static Resources</div>
+                <div class="gallery-list" id="gallery-list-root">
+                    <!-- Items injected by JS -->
+                </div>
+            </div>
+            <div class="gallery-main">
+                <div class="close-modal" onclick="toggleGallery(false)">✕</div>
+                <img id="gallery-img-view" src="" alt="Sensing View">
+                <div class="gallery-info">
+                    <h3 id="gallery-img-title">Resource Title</h3>
+                    <p id="gallery-img-desc">Description of the static resource mapping.</p>
+                    <a id="gallery-download" href="" download class="btn"
+                        style="display: inline-flex; width: auto; padding: 12px 32px;">
+                        📥 DOWNLOAD ASSET
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div class="panel-col">
+            <div class="card" style="flex: 1.2;">
+                <div class="card-label">Spatial Analysis</div>
+
+                <div style="margin: 10px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div
+                        style="text-align: center; background: rgba(59, 130, 246, 0.04); padding: 20px 10px; border-radius: 12px; border: 1px solid var(--border-muted); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div id="breadth-val"
+                            style="font-family: 'JetBrains Mono'; font-size: 38px; color: var(--accent-primary); font-weight: 700; line-height: 1;">
+                            0.0</div>
+                        <div
+                            style="font-size: 10px; color: var(--text-muted); margin-top: 10px; font-weight: 700; letter-spacing: 0.1em;">
+                            BREADTH (X)</div>
+                    </div>
+                    <div
+                        style="text-align: center; background: rgba(59, 130, 246, 0.04); padding: 20px 10px; border-radius: 12px; border: 1px solid var(--border-muted); display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div id="length-val"
+                            style="font-family: 'JetBrains Mono'; font-size: 38px; color: #fff; font-weight: 700; line-height: 1;">
+                            0.0</div>
+                        <div
+                            style="font-size: 10px; color: var(--text-muted); margin-top: 10px; font-weight: 700; letter-spacing: 0.1em;">
+                            LENGTH (Y)</div>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 10px; display: flex; justify-content: space-between; font-size: 9px; color: var(--text-muted);">
+                    <span>Polar: <span id="raw-polar" style="color:var(--text-body)">---</span></span>
+                    <span>System: <span style="color:var(--success)">COORD_MAP_ACTIVE</span></span>
+                </div>
+
+                <div class="chart-box">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card" style="flex: 1;">
+                <div class="card-label">Chaos Engine Status <span class="info-badge"
+                        title="Mathematical map that stays in sync with ESP32">?</span></div>
+                <div style="margin-top: 10px;">
+                    <div
+                        style="display: flex; justify-content: space-between; font-size: 10px; color: var(--text-muted);">
+                        <span>Symmetric Entropy</span>
+                        <span id="entropy-val" style="color: #fff">0.000000</span>
+                    </div>
+                    <div
+                        style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin: 8px 0; overflow:hidden;">
+                        <div id="entropy-bar" style="width: 0%; height: 100%; background: var(--accent-secondary);">
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; font-size: 10px; line-height: 1.6; color: var(--text-muted);">
+                    The system generates a unique AES key for every single scan using a <span
+                        style="color:var(--accent-secondary)">5D Hyper-Chaotic Map</span>. The key is never transmitted.
+                </div>
+            </div>
+        </div>
+
+        <div class="radar-viewport">
+            <canvas id="radarCanvas"></canvas>
+            <div
+                style="position: absolute; top: 24px; left: 24px; font-family: 'JetBrains Mono'; font-size: 10px; color: var(--text-muted); line-height: 1.8; letter-spacing: 0.1em;">
+                <span style="color: var(--accent-primary)">[SEC_LEVEL: MIL-SPEC]</span><br>
+                <span>[MODE: REAL_TIME_SCAN]</span>
+            </div>
+            <div id="lat-readout"
+                style="position: absolute; bottom: 24px; right: 24px; font-family: 'JetBrains Mono'; font-size: 10px; color: var(--text-muted); font-weight: 600;">
+                LATENCY: --ms
+            </div>
+        </div>
+
+        <div class="panel-col">
+            <div class="card" style="flex: 1.1;">
+                <div class="card-label">Live Decryption Process</div>
+                <div class="decrypt-viz"
+                    style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 20px; border: 1px solid var(--border-muted);">
+                    <div
+                        style="font-size: 10px; color: var(--danger); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.1em;">
+                        SECURE_CIPHER</div>
+                    <div id="hex-display" class="hex-data"
+                        style="font-size: 13px; color: var(--text-muted); word-break: break-all; min-height: 48px;">
+                        WAITING...</div>
+
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-muted);">
+                        <div
+                            style="font-size: 10px; color: var(--success); font-weight: 700; margin-bottom: 8px; letter-spacing: 0.1em;">
+                            PLAINTEXT_RECOVERY</div>
+                        <div id="plain-display" class="plain-data"
+                            style="font-size: 24px; color: var(--success); font-weight: 700;">---</div>
+                    </div>
+                    <div id="scan-bar" class="decrypt-overlay"></div>
+                </div>
+                <div style="margin-top: 15px; font-size: 9px; color: var(--text-muted); line-height: 1.6;">
+                    AES-128 cryptographic barrier verified. Multi-stage decryption ensures data integrity from sensing
+                    node to tactical display.
+                </div>
+            </div>
+
+            <div class="card" style="height: 180px; padding: 0; overflow: hidden; background: var(--bg-deep);">
+                <div
+                    style="padding: 14px 20px; border-bottom: 1px solid var(--border-muted); font-size: 10px; font-weight: 800; color: var(--text-heading); letter-spacing: 0.1em; background: var(--bg-surface);">
+                    RAW SYSTEM LOG
+                </div>
+                <div id="log-box"
+                    style="padding: 16px; font-family: 'JetBrains Mono'; font-size: 9px; overflow-y: auto; flex: 1; line-height: 1.6;">
+                    <div style="color: var(--accent-primary)">> Kernel initializing...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- REAL-TIME ENGINE ---
+        function updateTime() {
+            document.getElementById('sys-clock').innerText = new Date().toLocaleTimeString('en-GB');
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // --- TREND CHART ---
+        const ctxChart = document.getElementById('trendChart').getContext('2d');
+        const chart = new Chart(ctxChart, {
+            type: 'line',
+            data: {
+                labels: Array(30).fill(''),
+                datasets: [{
+                    data: Array(30).fill(0),
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    fill: { target: 'origin', above: 'rgba(59, 130, 246, 0.05)' }
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        display: true,
+                        grid: { color: 'rgba(255,255,255,0.03)' },
+                        ticks: { color: '#4b5563', font: { size: 9, family: 'JetBrains Mono' } }
+                    }
+                }
+            }
+        });
+
+        // --- RADAR ENGINE ---
+        const canvas = document.getElementById('radarCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, centerX, centerY, radius;
+
+        function refreshCanvas() {
+            width = canvas.width = canvas.parentElement.clientWidth;
+            height = canvas.height = canvas.parentElement.clientHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+            radius = Math.min(width, height) / 2.2;
+        }
+        window.addEventListener('resize', refreshCanvas);
+        refreshCanvas();
+
+        let currentAngle = 0;
+        let pings = [];
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+
+            // GRID & DISTANCE LABELS
+            ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--grid-color');
+            ctx.lineWidth = 1;
+            ctx.font = '9px "JetBrains Mono"';
+            ctx.fillStyle = 'var(--text-muted)';
+            ctx.textAlign = 'center';
+
+            for (let i = 1; i <= 4; i++) {
+                const r = (radius / 4) * i;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Add distance labels
+                ctx.fillText(`${(i * 50)}cm`, centerX, centerY - r - 5);
+            }
+
+            // SWEEP TRAIL (Glow)
+            const sweepRad = (currentAngle * Math.PI) / 180 - Math.PI / 2;
+            const trailGradient = ctx.createConicGradient(sweepRad, centerX, centerY);
+            trailGradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+            trailGradient.addColorStop(0.1, 'rgba(59, 130, 246, 0)');
+
+            ctx.fillStyle = trailGradient;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, sweepRad - 0.5, sweepRad);
+            ctx.lineTo(centerX, centerY);
+            ctx.fill();
+
+            // PINGS
+            const now = Date.now();
+            pings = pings.filter(p => now - p.time < 3000);
+
+            pings.forEach(p => {
+                const age = (now - p.time) / 3000;
+                const alpha = 1 - age;
+                const r_angle = (p.angle * Math.PI) / 180 - Math.PI / 2;
+                const distPx = (p.dist / 200) * radius;
+
+                const x = centerX + Math.cos(r_angle) * distPx;
+                const y = centerY + Math.sin(r_angle) * distPx;
+
+                // Ping Glow
+                const pingColor = p.dist < 50 ? `239, 68, 68` : `59, 130, 246`;
+                ctx.shadowBlur = 15 * (1 - age);
+                ctx.shadowColor = `rgba(${pingColor}, ${alpha})`;
+
+                ctx.fillStyle = `rgba(${pingColor}, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(x, y, 5 * (1 - age), 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Object Label
+                if (alpha > 0.5) {
+                    ctx.fillStyle = `rgba(${pingColor}, ${alpha - 0.2})`;
+                    ctx.font = 'bold 10px "JetBrains Mono"';
+                    ctx.fillText(`${p.dist}cm`, x + 12, y);
+
+                    // Small line connecting label
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(${pingColor}, ${alpha * 0.5})`;
+                    ctx.moveTo(x + 2, y);
+                    ctx.lineTo(x + 10, y);
+                    ctx.stroke();
+                }
+            });
+
+            // MAIN SWEEP LINE
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + Math.cos(sweepRad) * radius, centerY + Math.sin(sweepRad) * radius);
+            ctx.stroke();
+
+            requestAnimationFrame(render);
+        }
+        render();
+
+        // --- PIPELINE LOGIC ---
+        let isAnimating = false;
+        function runPipelineAnimation(data) {
+            if (isAnimating) return;
+            isAnimating = true;
+
+            const packet = document.getElementById('data-packet');
+            const steps = [
+                { el: document.getElementById('step-sense'), pill: document.getElementById('pill-sense'), val: `SENSE: ${data.distance}cm`, pos: '10%' },
+                { el: document.getElementById('step-encrypt'), pill: document.getElementById('pill-encrypt'), val: `AES-128: [${data.key_id}]`, pos: '30%' },
+                { el: document.getElementById('step-transmit'), pill: document.getElementById('pill-transmit'), val: `AWS_TX: SUCCESS`, pos: '50%' },
+                { el: document.getElementById('step-decrypt'), pill: document.getElementById('pill-decrypt'), val: `LWE_REC: OK`, pos: '70%' },
+                { el: document.getElementById('step-plot'), pill: document.getElementById('pill-plot'), val: `PLOT: ${data.angle}°`, pos: '90%' }
+            ];
+
+            // Reset steps
+            steps.forEach(s => s.el.classList.remove('step-active'));
+
+            // Animate packet transmission
+            packet.style.transition = 'none';
+            packet.style.left = '5%';
+            packet.style.opacity = '1';
+
+            let currentStep = 0;
+            const stepInterval = 250; // Delay between each process step
+
+            function processNextStep() {
+                if (currentStep >= steps.length) {
+                    setTimeout(() => {
+                        packet.style.opacity = '0';
+                        isAnimating = false;
+                    }, 500);
+                    return;
+                }
+
+                const step = steps[currentStep];
+
+                // Move packet to step
+                packet.style.transition = 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                packet.style.left = step.pos;
+
+                // Activate step visual
+                setTimeout(() => {
+                    step.el.classList.add('step-active');
+                    step.pill.innerText = step.val;
+
+                    if (currentStep === 1) addLog(`> CRYPTO_ENGINE: AES key derived. Encrypting payload...`);
+                    if (currentStep === 2) addLog(`> TRANSCEIVER: Payload dispatched to AWS Cloud Endpoint`);
+                    if (currentStep === 4) addLog(`> VISUALIZER: Rendering spatial coordinates (${data.distance}cm, ${data.angle}°)`);
+
+                    currentStep++;
+                    setTimeout(processNextStep, stepInterval);
+                }, 200);
+            }
+
+            processNextStep();
+        }
+
+        // --- SETTINGS LOGIC ---
+        function setTheme(theme) {
+            const tacticalBtn = document.getElementById('theme-tactical');
+            const studioBtn = document.getElementById('theme-studio');
+
+            if (theme === 'light') {
+                document.body.classList.add('light-theme');
+                studioBtn.classList.add('active');
+                tacticalBtn.classList.remove('active');
+            } else {
+                document.body.classList.remove('light-theme');
+                tacticalBtn.classList.add('active');
+                studioBtn.classList.remove('active');
+            }
+        }
+        // Init theme
+        setTheme('dark');
+
+        let scanInterval = 200;
+        let syncIntervalId = null;
+
+        // --- GALLERY LOGIC ---
+        const galleryData = [
+            { id: 'arch', title: 'System Architecture', file: 'architecture.png', desc: 'Visualizes the end-to-end data pipeline from physical sensor to AWS cloud processing.' },
+            { id: 'circuit', title: 'Circuit Diagram', file: 'circuit.png', desc: 'The hardware schematic for the HC-SR04 ultrasonic sensor and ESP32 interface.' },
+            { id: 'flow', title: 'Data Flow Engine', file: 'flow.png', desc: 'Detailed mapping of the AES-128 encryption layers and Chaos entropy generator.' },
+            { id: 'demo1', title: 'Field Demo: Proximity', file: 'demo1.jpg', desc: 'Real-world application showing the system sensing objects in an industrial environment.' },
+            { id: 'demo2', title: 'Field Demo: Radar', file: 'demo2.jpg', desc: 'A snapshot of the tactical radar mapping an enclosed room.' },
+            { id: 'demo3', title: 'Hardware Profile', file: 'demo3.jpg', desc: 'Close-up of the sensing node protected by our privacy-first hardware shell.' },
+            { id: 'logo', title: 'Brand Identity', file: 'logo.png', desc: 'The official HC-LEP Enterprise Sensing Platform logo and assets.' }
+        ];
+
+        function toggleGallery(show) {
+            document.getElementById('gallery-modal').classList.toggle('active', show);
+            if (show && document.getElementById('gallery-list-root').children.length === 0) {
+                renderGallery();
+            }
+        }
+
+        function renderGallery() {
+            const list = document.getElementById('gallery-list-root');
+            galleryData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'gallery-item';
+                div.innerHTML = `<span>🖼️</span> <span>${item.title}</span>`;
+                div.onclick = () => selectGalleryItem(item, div);
+                list.appendChild(div);
+            });
+            // Select first
+            list.children[0].click();
+        }
+
+        function selectGalleryItem(item, el) {
+            document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('gallery-img-view').src = `/static/${item.file}`;
+            document.getElementById('gallery-img-title').innerText = item.title;
+            document.getElementById('gallery-img-desc').innerText = item.desc;
+            document.getElementById('gallery-download').href = `/static/${item.file}`;
+            document.getElementById('gallery-download').download = item.file;
+        }
+
+        function updateFreq(val) {
+            scanInterval = parseInt(val);
+            document.getElementById('freq-val').innerText = val;
+            clearInterval(syncIntervalId);
+            syncIntervalId = setInterval(sync, scanInterval);
+        }
+
+        function addLog(msg) {
+            const box = document.getElementById('log-box');
+            const entry = document.createElement('div');
+            entry.innerHTML = `<span style="color:var(--text-muted)">[${new Date().toLocaleTimeString('en-GB')}]</span> ${msg}`;
+            box.insertBefore(entry, box.firstChild);
+            if (box.children.length > 20) box.removeChild(box.lastChild);
+        }
+
+        // --- DATA BRIDGE ---
+        let lastServerTs = 0;
+        let lastPingTime = Date.now();
+        let isSyncing = false;
+
+        async function sync() {
+            if (isSyncing) return;
+            isSyncing = true;
+            try {
+                const t0 = Date.now();
+                const res = await fetch('/data?_t=' + t0);
+                const data = await res.json();
+                isSyncing = false; // Release lock
+                const lat = Date.now() - t0;
+                document.getElementById('lat-readout').innerText = `LATENCY: ${lat}ms`;
+
+                if (data.timestamp > lastServerTs) {
+                    lastServerTs = data.timestamp;
+                    lastPingTime = Date.now();
+
+                    // Trigger Live Pipeline with real data
+                    runPipelineAnimation(data);
+
+                    const angle = parseInt(data.angle) || 0;
+                    const distance = parseInt(data.distance) || 0;
+
+                    currentAngle = angle;
+                    pings.push({ angle, dist: distance, time: Date.now() });
+
+                    // UI UPDATES
+                    const rad = (angle * Math.PI) / 180;
+                    const x = (distance * Math.sin(rad)).toFixed(1);
+                    const y = (distance * Math.cos(rad)).toFixed(1);
+
+                    document.getElementById('breadth-val').innerText = x;
+                    document.getElementById('length-val').innerText = y;
+                    document.getElementById('raw-polar').innerText = `${distance}cm / ${angle}°`;
+
+                    chart.data.datasets[0].data.push(distance);
+                    chart.data.datasets[0].data.shift();
+                    chart.update('none');
+
+                    document.getElementById('entropy-val').innerText = data.entropy;
+                    document.getElementById('entropy-bar').style.width = (parseFloat(data.entropy) * 100) + "%";
+
+                    // DECRYPTION VIZ
+                    if (data.encrypted !== "No Data" && data.encrypted !== window.lastEnc) {
+                        const hex = document.getElementById('hex-display');
+                        const plain = document.getElementById('plain-display');
+                        const bar = document.getElementById('scan-bar');
+
+                        hex.innerText = data.encrypted;
+                        hex.style.color = 'var(--danger)';
+                        bar.classList.add('anim-slide');
+
+                        setTimeout(() => {
+                            plain.innerText = `D:${distance}cm | A:${angle}°`;
+                            hex.style.color = '#444';
+                            bar.classList.remove('anim-slide');
+                        }, 500);
+
+                        window.lastEnc = data.encrypted;
+                    }
+
+                    document.getElementById('status-chip').style.background = 'rgba(16, 185, 129, 0.1)';
+                    document.getElementById('status-chip').querySelector('span').innerText = 'LINK ACTIVE';
+                }
+
+                if (Date.now() - lastPingTime > 5000) {
+                    document.getElementById('status-chip').style.background = 'rgba(239, 68, 68, 0.1)';
+                    document.getElementById('status-chip').querySelector('span').innerText = 'LINK TIMEOUT';
+                    document.getElementById('status-chip').querySelector('div').style.background = 'var(--danger)';
+                }
+
+            } catch (e) {
+                isSyncing = false;
+            }
+        }
+        syncIntervalId = setInterval(sync, scanInterval);
+        addLog("> All Systems Nominal. Ready for deployment.");
+    </script>
+</body>
+
+</html>
