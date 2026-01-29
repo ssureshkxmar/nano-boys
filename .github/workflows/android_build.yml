@@ -8,11 +8,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Build Android APK
-        uses: pwa-builder/pwabuilder-android@v1
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          siteUrl: "http://3.110.86.38:5000"
-          manifestUrl: "http://3.110.86.38:5000/static/manifest.json"
+          node-version: 18
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Initialize and Build APK
+        run: |
+          # Create a dummy keystore for signing
+          keytool -genkey -v -keystore android.keystore -alias android -keyalg RSA -keysize 2048 -validity 10000 -storepass password -keypass password -dname "CN=NanoBoys, OU=IT, O=NanoBoys, L=City, S=State, C=IN"
+          
+          # Use bubblewrap to build the project from your URL
+          # We use bypass-config to avoid interactive prompts
+          bubblewrap init --manifest="http://3.110.86.38:5000/static/manifest.json" --meta--name="NanoBoys" --meta--shortName="NanoBoys" --meta--themeColor="#2563eb" --meta--backgroundColor="#0f172a" --meta--startUrl="/" --meta--icon="/static/logo.png" --meta--packageId="com.nanoboys.radar" --meta--keyStorePath="./android.keystore" --meta--keyStorePassword="password" --meta--keyAlias="android"
+          bubblewrap build --signingKeyPath="./android.keystore" --signingKeyPassword="password" --signingKeyAlias="android"
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
