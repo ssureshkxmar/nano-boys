@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HC-LEP // Enterprise Sensing Platform</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/png" href="/static/logo.png">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap"
         rel="stylesheet">
@@ -738,6 +743,69 @@
             background: var(--danger);
             transform: rotate(90deg);
         }
+
+        /* MOBILE RESPONSIVENESS */
+        @media (max-width: 1100px) {
+            main {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+                height: auto;
+            }
+
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+
+            .panel-col {
+                order: 2;
+            }
+
+            .radar-viewport {
+                order: 1;
+                height: 400px;
+                min-height: 400px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header {
+                height: auto;
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .pipeline-container {
+                justify-content: flex-start;
+                gap: 30px;
+                padding: 20px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .pipeline-step {
+                min-width: 100px;
+            }
+
+            .brand-text h1 {
+                font-size: 18px;
+            }
+
+            main {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            #breadth-val,
+            #length-val {
+                font-size: 32px;
+            }
+        }
     </style>
 </head>
 
@@ -1323,6 +1391,17 @@
         }
         syncIntervalId = setInterval(sync, scanInterval);
         addLog("> All Systems Nominal. Ready for deployment.");
+
+        // Register PWA Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/static/sw.js').then(reg => {
+                    console.log('SW Registered!', reg);
+                }).catch(err => {
+                    console.log('SW Registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 
