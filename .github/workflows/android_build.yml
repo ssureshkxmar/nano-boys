@@ -8,30 +8,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Build Android APK
+        uses: pwa-builder/pwabuilder-android@v1
         with:
-          node-version: 18
-
-      - name: Install Bubblewrap
-        run: npm install -g @bubblewrap/cli
-
-      - name: Build APK (Headless)
-        run: |
-          echo "Building APK for http://3.110.86.38:5000"
+          siteUrl: "http://3.110.86.38:5000"
+          manifestUrl: "http://3.110.86.38:5000/static/manifest.json"
           
-      - name: PWA to APK
-        uses: sharadcodes/pwa-to-apk-action@main
-        with:
-          pwa-url: "http://3.110.86.38:5000"
-          app-name: "NanoBoys"
-          package-id: "com.nanoboys.radar"
-
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: NanoBoys-Android-App
-          path: "**/*.apk"
+          path: ./**/*.apk
