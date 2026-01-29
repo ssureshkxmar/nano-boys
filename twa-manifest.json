@@ -1,0 +1,24 @@
+{
+    "packageId": "com.nanoboys.radar",
+    "host": "3.110.86.38",
+    "name": "NanoBoys Radar",
+    "launcherName": "NanoBoys",
+    "displayMode": "standalone",
+    "themeColor": "#2563eb",
+    "navigationColor": "#0f172a",
+    "backgroundColor": "#0f172a",
+    "enableNotifications": false,
+    "startUrl": "/",
+    "iconUrl": "http://3.110.86.38:5000/static/logo.png",
+    "maskableIconUrl": "http://3.110.86.38:5000/static/logo.png",
+    "splashScreenFadeOutDuration": 300,
+    "signingKey": {
+        "path": "./android.keystore",
+        "alias": "android"
+    },
+    "appVersion": "1.0.0",
+    "webManifestUrl": "http://3.110.86.38:5000/static/manifest.json",
+    "fallbackType": "customtabs",
+    "orientation": "any",
+    "pwaUrl": "http://3.110.86.38:5000"
+}

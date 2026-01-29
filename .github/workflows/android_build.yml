@@ -25,15 +25,13 @@ jobs:
       - name: Install Bubblewrap
         run: npm install -g @bubblewrap/cli
 
-      - name: Initialize and Build APK
+      - name: Build APK (Non-Interactive)
         run: |
-          # Create a dummy keystore for signing
+          # Create keystore
           keytool -genkey -v -keystore android.keystore -alias android -keyalg RSA -keysize 2048 -validity 10000 -storepass password -keypass password -dname "CN=NanoBoys, OU=IT, O=NanoBoys, L=City, S=State, C=IN"
           
-          # Use bubblewrap to build the project from your URL
-          # We use bypass-config to avoid interactive prompts
-          bubblewrap init --manifest="http://3.110.86.38:5000/static/manifest.json" --meta--name="NanoBoys" --meta--shortName="NanoBoys" --meta--themeColor="#2563eb" --meta--backgroundColor="#0f172a" --meta--startUrl="/" --meta--icon="/static/logo.png" --meta--packageId="com.nanoboys.radar" --meta--keyStorePath="./android.keystore" --meta--keyStorePassword="password" --meta--keyAlias="android"
-          bubblewrap build --signingKeyPath="./android.keystore" --signingKeyPassword="password" --signingKeyAlias="android"
+          # Build using the twa-manifest.json we created
+          npx @bubblewrap/cli build --skipConfig --signingKeyPassword="password" --signingKeyAliasPassword="password"
           
       - name: Upload APK
         uses: actions/upload-artifact@v4
