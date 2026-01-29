@@ -11,35 +11,35 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-base: #0a0a0c;
-            --bg-surface: #141417;
-            --bg-deep: #000000;
-            --bg-card: rgba(28, 28, 30, 0.82);
-            --border-muted: rgba(255, 255, 255, 0.08);
-            --accent-primary: #3b82f6;
-            --accent-secondary: #8b5cf6;
-            --accent-glow: rgba(59, 130, 246, 0.35);
-            --text-heading: #ffffff;
-            --text-body: #a1a1aa;
-            --text-muted: #71717a;
-            --danger: #ef4444;
-            --success: #10b981;
-            --card-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            --grid-color: rgba(255, 255, 255, 0.06);
+            --bg-base: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-deep: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --border-muted: rgba(0, 0, 0, 0.05);
+            --accent-primary: #2563eb;
+            --accent-secondary: #4f46e5;
+            --accent-glow: rgba(37, 99, 235, 0.15);
+            --text-heading: #0f172a;
+            --text-body: #475569;
+            --text-muted: #94a3b8;
+            --danger: #e11d48;
+            --success: #059669;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            --grid-color: rgba(37, 99, 235, 0.15);
         }
 
-        body.light-theme {
-            --bg-base: #f0f4f8;
-            --bg-surface: rgba(255, 255, 255, 0.9);
-            --bg-deep: #e2e8f0;
-            --bg-card: rgba(255, 255, 255, 0.7);
-            --border-muted: rgba(59, 130, 246, 0.15);
-            --text-heading: #1e293b;
-            --text-body: #475569;
+        body.dark-theme {
+            --bg-base: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-deep: #020617;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --border-muted: rgba(255, 255, 255, 0.06);
+            --text-heading: #f8fafc;
+            --text-body: #94a3b8;
             --text-muted: #64748b;
-            --accent-glow: rgba(59, 130, 246, 0.2);
-            --card-shadow: 0 10px 40px rgba(59, 130, 246, 0.1);
-            --grid-color: rgba(59, 130, 246, 0.08);
+            --accent-glow: rgba(37, 99, 235, 0.3);
+            --card-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            --grid-color: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -52,49 +52,29 @@
         body {
             background-color: var(--bg-base);
             color: var(--text-body);
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             height: 100vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             position: relative;
+            transition: background-color 0.4s ease;
         }
 
         body::before {
             content: "";
             position: absolute;
             inset: 0;
-            background-image: radial-gradient(var(--accent-primary) 1.5px, transparent 1.5px);
-            background-size: 32px 32px;
-            opacity: 0.08;
+            background-image: radial-gradient(var(--accent-primary) 0.8px, transparent 0.8px);
+            background-size: 24px 24px;
+            opacity: 0.12;
             pointer-events: none;
             z-index: 0;
-        }
-
-        body::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-
-        body.light-theme::after {
-            opacity: 1;
-            background: radial-gradient(circle at 5% 5%, rgba(59, 130, 246, 0.1) 0%, transparent 35%),
-                radial-gradient(circle at 95% 95%, rgba(139, 92, 246, 0.1) 0%, transparent 35%),
-                radial-gradient(circle at 80% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 30%),
-                radial-gradient(circle at 20% 80%, rgba(245, 158, 11, 0.05) 0%, transparent 30%);
         }
 
         /* HEADER */
         header {
-            height: 80px;
+            height: 72px;
             padding: 0 40px;
             display: flex;
             align-items: center;
@@ -102,7 +82,7 @@
             background: var(--bg-surface);
             border-bottom: 1px solid var(--border-muted);
             z-index: 100;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .brand {
@@ -156,7 +136,7 @@
 
         /* PIPELINE VISUALIZER */
         .pipeline-container {
-            background: var(--bg-deep);
+            background: var(--bg-surface);
             padding: 24px 32px;
             border-bottom: 1px solid var(--border-muted);
             display: flex;
@@ -164,7 +144,6 @@
             align-items: center;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-surface) 100%);
         }
 
         .pipeline-bg-flow {
@@ -200,17 +179,16 @@
         }
 
         .step-icon {
-            width: 38px;
-            height: 38px;
-            background: var(--bg-surface);
+            width: 44px;
+            height: 44px;
+            background: var(--bg-deep);
             border: 1px solid var(--border-muted);
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 20px;
             color: var(--text-muted);
-            opacity: 0.8;
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -319,6 +297,20 @@
             box-shadow: 0 0 4px var(--accent-primary);
         }
 
+        .step-active .step-icon {
+            border-color: var(--accent-primary);
+            background: #fff;
+            color: var(--accent-primary);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1), 0 0 0 4px rgba(37, 99, 235, 0.05);
+            transform: translateY(-4px);
+            z-index: 5;
+        }
+
+        .step-active .step-label {
+            color: var(--text-heading);
+            font-weight: 800;
+        }
+
         /* MAIN CONTENT */
         main {
             flex: 1;
@@ -335,17 +327,20 @@
         }
 
         .card {
-            background: var(--bg-card);
+            background: var(--bg-surface);
             border: 1px solid var(--border-muted);
-            border-radius: 12px;
-            padding: 20px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             position: relative;
             box-shadow: var(--card-shadow);
             transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .dark-theme .card {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .light-theme .card {
@@ -420,14 +415,15 @@
         /* RADAR VIEW */
         .radar-viewport {
             flex: 1;
-            background: var(--bg-deep);
+            background: var(--bg-surface);
             border: 1px solid var(--border-muted);
-            border-radius: 12px;
+            border-radius: 20px;
             position: relative;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: var(--card-shadow);
         }
 
         #radarCanvas {
@@ -1042,7 +1038,8 @@
                 ctx.stroke();
 
                 // Add distance labels
-                ctx.fillText(`${(i * 50)}cm`, centerX, centerY - r - 5);
+                ctx.fillStyle = 'var(--text-muted)';
+                ctx.fillText(`${(i * 50)}cm`, centerX, centerY - r - 8);
             }
 
             // SWEEP TRAIL (Glow)
@@ -1062,7 +1059,10 @@
             const now = Date.now();
             pings = pings.filter(p => now - p.time < 3000);
 
-            pings.forEach(p => {
+            // Sort pings by time so the latest one is drawn last
+            pings.sort((a, b) => a.time - b.time);
+
+            pings.forEach((p, index) => {
                 const age = (now - p.time) / 3000;
                 const alpha = 1 - age;
                 const r_angle = (p.angle * Math.PI) / 180 - Math.PI / 2;
@@ -1073,24 +1073,26 @@
 
                 // Ping Glow
                 const pingColor = p.dist < 50 ? `239, 68, 68` : `59, 130, 246`;
-                ctx.shadowBlur = 15 * (1 - age);
+                ctx.shadowBlur = 10 * (1 - age);
                 ctx.shadowColor = `rgba(${pingColor}, ${alpha})`;
 
                 ctx.fillStyle = `rgba(${pingColor}, ${alpha})`;
                 ctx.beginPath();
-                ctx.arc(x, y, 5 * (1 - age), 0, Math.PI * 2);
+                ctx.arc(x, y, 4 * (1 - age), 0, Math.PI * 2);
                 ctx.fill();
                 ctx.shadowBlur = 0;
 
-                // Object Label
-                if (alpha > 0.5) {
-                    ctx.fillStyle = `rgba(${pingColor}, ${alpha - 0.2})`;
-                    ctx.font = 'bold 10px "JetBrains Mono"';
+                // Object Label - ONLY for the latest ping to avoid overlapping
+                if (index === pings.length - 1 && alpha > 0.3) {
+                    ctx.fillStyle = `rgba(${pingColor}, 1)`;
+                    ctx.font = 'bold 12px "JetBrains Mono"';
+                    ctx.textAlign = 'left';
                     ctx.fillText(`${p.dist}cm`, x + 12, y);
 
-                    // Small line connecting label
+                    // Small pointer line
                     ctx.beginPath();
-                    ctx.strokeStyle = `rgba(${pingColor}, ${alpha * 0.5})`;
+                    ctx.strokeStyle = `rgba(${pingColor}, 0.8)`;
+                    ctx.lineWidth = 1.5;
                     ctx.moveTo(x + 2, y);
                     ctx.lineTo(x + 10, y);
                     ctx.stroke();
@@ -1143,59 +1145,38 @@
         // --- PIPELINE LOGIC ---
         let isAnimating = false;
         function runPipelineAnimation(data) {
-            if (isAnimating) return;
-            isAnimating = true;
-
-            const packet = document.getElementById('data-packet');
             const steps = [
-                { el: document.getElementById('step-sense'), pill: document.getElementById('pill-sense'), val: `SENSE: ${data.distance}cm`, pos: '10%' },
-                { el: document.getElementById('step-encrypt'), pill: document.getElementById('pill-encrypt'), val: `AES: ${data.encrypted.substring(0, 10)}...`, pos: '30%' },
-                { el: document.getElementById('step-transmit'), pill: document.getElementById('pill-transmit'), val: `CLOUD: SUCCESS`, pos: '50%' },
-                { el: document.getElementById('step-decrypt'), pill: document.getElementById('pill-decrypt'), val: `LWE: VERIFIED`, pos: '70%' },
-                { el: document.getElementById('step-plot'), pill: document.getElementById('pill-plot'), val: `PLOT: ${data.angle}°`, pos: '90%' }
+                { id: 'pill-sense', val: `SENSE: ${data.distance}cm` },
+                { id: 'pill-encrypt', val: `AES: ${data.encrypted.substring(0, 12)}` },
+                { id: 'pill-transmit', val: `CLOUD: SUCCESS` },
+                { id: 'pill-decrypt', val: `LWE: VERIFIED` },
+                { id: 'pill-plot', val: `PLOT: ${data.angle}°` }
             ];
 
-            // Reset steps
-            steps.forEach(s => s.el.classList.remove('step-active'));
+            // Update all pills instantly
+            steps.forEach(s => {
+                document.getElementById(s.id).innerText = s.val;
+            });
 
-            // Animate packet transmission
+            // Trigger packet burst animation
+            const packet = document.getElementById('data-packet');
             packet.style.transition = 'none';
             packet.style.left = '5%';
             packet.style.opacity = '1';
 
-            let currentStep = 0;
-            const stepInterval = 250; // Delay between each process step
-
-            function processNextStep() {
-                if (currentStep >= steps.length) {
-                    setTimeout(() => {
-                        packet.style.opacity = '0';
-                        isAnimating = false;
-                    }, 500);
-                    return;
-                }
-
-                const step = steps[currentStep];
-
-                // Move packet to step
+            requestAnimationFrame(() => {
                 packet.style.transition = 'left 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-                packet.style.left = step.pos;
+                packet.style.left = '95%';
+                setTimeout(() => { packet.style.opacity = '0'; }, 400);
+            });
 
-                // Activate step visual
-                setTimeout(() => {
-                    step.el.classList.add('step-active');
-                    step.pill.innerText = step.val;
+            // Sync with Decryption Viz instantly
+            const hexDisplay = document.getElementById('hex-display');
+            const plainDisplay = document.getElementById('plain-display');
 
-                    if (currentStep === 1) addLog(`> CRYPTO_ENGINE: AES key derived. Encrypting payload...`);
-                    if (currentStep === 2) addLog(`> TRANSCEIVER: Payload dispatched to AWS Cloud Endpoint`);
-                    if (currentStep === 4) addLog(`> VISUALIZER: Rendering spatial coordinates (${data.distance}cm, ${data.angle}°)`);
-
-                    currentStep++;
-                    setTimeout(processNextStep, stepInterval);
-                }, 200);
-            }
-
-            processNextStep();
+            hexDisplay.innerText = data.encrypted;
+            hexDisplay.style.color = '#fff';
+            plainDisplay.innerText = `D:${data.distance}cm | A:${data.angle}°`;
         }
 
         // --- SETTINGS LOGIC ---
@@ -1203,18 +1184,18 @@
             const tacticalBtn = document.getElementById('theme-tactical');
             const studioBtn = document.getElementById('theme-studio');
 
-            if (theme === 'light') {
-                document.body.classList.add('light-theme');
-                studioBtn.classList.add('active');
-                tacticalBtn.classList.remove('active');
-            } else {
-                document.body.classList.remove('light-theme');
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
                 tacticalBtn.classList.add('active');
                 studioBtn.classList.remove('active');
+            } else {
+                document.body.classList.remove('dark-theme');
+                studioBtn.classList.add('active');
+                tacticalBtn.classList.remove('active');
             }
         }
-        // Init theme
-        setTheme('dark');
+        // Init theme (Studio/Light default)
+        setTheme('light');
 
         let scanInterval = 200;
         let syncIntervalId = null;
@@ -1320,24 +1301,8 @@
                     document.getElementById('entropy-val').innerText = data.entropy;
                     document.getElementById('entropy-bar').style.width = (parseFloat(data.entropy) * 100) + "%";
 
-                    // DECRYPTION VIZ
-                    if (data.encrypted !== "No Data" && data.encrypted !== window.lastEnc) {
-                        const hex = document.getElementById('hex-display');
-                        const plain = document.getElementById('plain-display');
-                        const bar = document.getElementById('scan-bar');
-
-                        hex.innerText = data.encrypted;
-                        hex.style.color = 'var(--danger)';
-                        bar.classList.add('anim-slide');
-
-                        setTimeout(() => {
-                            plain.innerText = `D:${distance}cm | A:${angle}°`;
-                            hex.style.color = '#444';
-                            bar.classList.remove('anim-slide');
-                        }, 500);
-
-                        window.lastEnc = data.encrypted;
-                    }
+                    // Pipeline handled decryption viz synchronization
+                    window.lastEnc = data.encrypted;
 
                     document.getElementById('status-chip').style.background = 'rgba(16, 185, 129, 0.1)';
                     document.getElementById('status-chip').querySelector('span').innerText = 'LINK ACTIVE';
