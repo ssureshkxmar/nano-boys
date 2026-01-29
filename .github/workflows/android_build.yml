@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
@@ -21,22 +21,17 @@ jobs:
 
       - name: Build APK (Headless)
         run: |
-          # This simulates the bubblewrap init/build process for your URL
-          # Using a simplified PWA-to-APK action for reliability
           echo "Building APK for http://3.110.86.38:5000"
           
       - name: PWA to APK
-        uses: sharadcodes/pwa-to-apk-action@master
+        uses: sharadcodes/pwa-to-apk-action@main
         with:
-          # Your hosted AWS URL
           pwa-url: "http://3.110.86.38:5000"
-          # The name of your app
           app-name: "NanoBoys"
-          # Package ID for Android
           package-id: "com.nanoboys.radar"
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: NanoBoys-Android-App
           path: ./*.apk
